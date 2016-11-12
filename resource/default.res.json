@@ -1,0 +1,35 @@
+{
+	"groups": [
+		{
+			"keys": "bg_jpg,egret_icon_png,description_json,player01_idle_right_png,player01_idle_left_png",
+			"name": "preload"
+		}
+	],
+	"resources": [
+		{
+			"name": "bg_jpg",
+			"type": "image",
+			"url": "assets/bg.jpg"
+		},
+		{
+			"name": "egret_icon_png",
+			"type": "image",
+			"url": "assets/egret_icon.png"
+		},
+		{
+			"name": "description_json",
+			"type": "json",
+			"url": "config/description.json"
+		},
+		{
+			"name": "player01_idle_right_png",
+			"type": "image",
+			"url": "assets/player01_idle_right.png"
+		},
+		{
+			"name": "player01_idle_left_png",
+			"type": "image",
+			"url": "assets/player01_idle_left.png"
+		}
+	]
+}
