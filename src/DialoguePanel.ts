@@ -1,25 +1,17 @@
-/*
-使用方法：
-	1.drawPanel();
-	2.获得panel
-*/
-
-class TaskPanel implements Observer{
-
+class DialoguePanel {
 	panel:egret.DisplayObjectContainer;
 
 	stage:egret.DisplayObjectContainer;
 
-	private id = "TaskPanel";
-
 	private taskService:TaskService;
+	private npc:NPC;
 	private currentTaskId:string;
 	private currentTaskStatus:number;
 
 	private backColor = 0xFFFAFA;
 	private backGround:egret.Shape;
 	private panelX = 100;
-	private panelY = 600;
+	private panelY = 300;
 	private panelWidth = 200;
 	private panelHeight = 300;
 	//private panelWidth = 500;
@@ -58,7 +50,6 @@ class TaskPanel implements Observer{
 	public constructor(stage:egret.DisplayObjectContainer,taskService:TaskService) {
 		this.stage = stage;
 		this.taskService = taskService;
-		this.taskService.addObserver(this);
 		this.panel = new egret.DisplayObjectContainer();
 		this.taskNameTextField = new egret.TextField();
 		this.taskDescTextField = new egret.TextField();
@@ -67,8 +58,6 @@ class TaskPanel implements Observer{
 		this.buttonBack = new egret.Shape();
 		this.buttonTextField = new egret.TextField();
 		this.drawPanel();
-		this.getTask();
-		this.stage.addChild(this.panel);
 	}
 
 	private setText(){
@@ -132,20 +121,50 @@ class TaskPanel implements Observer{
 		this.panel.addChild(this.taskNameTextField);
 		this.panel.addChild(this.taskDescTextField);
 		this.panel.addChild(this.button);
+		this.button.touchEnabled = true;
+		this.button.addEventListener(egret.TouchEvent.TOUCH_TAP,this.onButtonClick,this);
 
 	}
+
+	private onButtonClick(e:egret.TouchEvent) {
+		switch(this.currentTaskStatus){
+			case TaskStatus.ACCEOTABLE:
+				console.log("Accept Button Click");
+				console.log("Current Task Id: "+ this.currentTaskId);
+				this.taskService.accept(this.currentTaskId);
+				break;
+			
+			case TaskStatus.CAN_SUBMIT:
+				console.log("Submit Button Click");
+				this.taskService.finish(this.currentTaskId);
+				break;
+
+			default:
+				console.log("Button Click");
+
+		}
+
+		this.stage.removeChild(this.panel);
+
+	} //按钮被点击
+
 
 	public showPanel() {
 		this.stage.addChild(this.panel);
 
 	}
 
-	public onChange(task:Task) {
+	public removePanel() {
+		this.stage.removeChild(this.panel);
+
+	}
+
+	public onOpen(task:Task) {
 		this.currentTaskId = task.id;
 		this.changeTaskText(task.name,task.desc);
 		this.changeButton(task.status);
 		this.currentTaskStatus = task.status;
-		//this.showPanel();
+		this.showPanel();
 
 	} //被通知
 
@@ -158,15 +177,11 @@ class TaskPanel implements Observer{
 	private changeButton(taskStatus:number) {
 		switch(taskStatus){
 			case TaskStatus.ACCEOTABLE:
-				this.buttonTextField.text = "可接受";
+				this.buttonTextField.text = "接受";
 				break;
 
 			case TaskStatus.CAN_SUBMIT:
-				this.buttonTextField.text = "可提交";
-				break;
-			
-			case TaskStatus.SUBMITTED:
-				this.buttonTextField.text = "已完成";
+				this.buttonTextField.text = "提交";
 				break;
 
 			default:
@@ -176,23 +191,4 @@ class TaskPanel implements Observer{
 		}
 
 	}
-
-	rule(taskList:Task[],id:string):Task {
-		for(var i = 0; i<taskList.length; i++) {
-			if(taskList[i].status != TaskStatus.UNACCEPTABLE) {
-				console.log(id + " Find Task");
-				return taskList[i];
-
-			}
-		}
-	}
-
-	getTask() {
-		var task = this.taskService.getTaskByCustomRole(this.rule,this.id);
-		this.onChange(task);
-
-	}
-
-
-
 }

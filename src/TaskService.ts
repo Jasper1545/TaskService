@@ -4,21 +4,9 @@ var ErrorCode = {
 	ID_NOTFOUND:1
 }
 
-class ObserverWithType{
-
-	observer:Observer;
-	type:string;
-
-	constructor(observer:Observer,type:string) {
-		this.observer = observer;
-		this.type = type;
-	}
-
-}
-
 class TaskService {
 
-	observerList:ObserverWithType[];
+	observerList:Observer[];
 	taskList:Task[];
 
 	task01:Task;
@@ -30,8 +18,8 @@ class TaskService {
 		this.taskList.push(this.task01);
 	}
 
-	addObserver(observer:Observer,type:string) {
-		this.observerList.push(new ObserverWithType(observer,type));
+	addObserver(observer:Observer) {
+		this.observerList.push(observer);
 	}
 
 	accept(id:string):number {
@@ -39,7 +27,7 @@ class TaskService {
 			if(this.taskList[i].id == id) {
 				console.log("Find Task: " + this.taskList[i].id);
 				this.taskList[i].status = TaskStatus.CAN_SUBMIT;
-				this.notifyNpc(this.taskList[i]);
+				this.notify(this.taskList[i]);
 				return ErrorCode.NO_ERRIR;
 
 			}else if(i == this.taskList.length - 1) {
@@ -54,7 +42,7 @@ class TaskService {
 		for(var i = 0; i < this.taskList.length; i++) {
 			if(this.taskList[i].id == id) {
 				this.taskList[i].status = TaskStatus.SUBMITTED;
-				this.notifyNpc(this.taskList[i]);
+				this.notify(this.taskList[i]);
 				return ErrorCode.NO_ERRIR;
 				
 			}else if(i == this.taskList.length - 1) {
@@ -69,26 +57,11 @@ class TaskService {
 
 	}
 
-
-	notifyTaskPanel(task:Task) {
-		for(var i =0; i < this.observerList.length; i++) {
-			if(this.observerList[i].type == "TaskPanel") {
-				this.observerList[i].observer.onChange(task);
-
-			}
-		}		
-	}
-
-	notifyNpc(task:Task) {
+	notify(task:Task) {
 		for(var i = 0; i < this.observerList.length; i++) {
-			console.log("Type:"+ this.observerList[i].type);
-			if(this.observerList[i].type == "NPC") {
-				console.log("Find NPC");
-				this.observerList[i].observer.onChange(task);
-						
-			}
-		}
+				this.observerList[i].onChange(task);
 
+		}
 	}
 
 

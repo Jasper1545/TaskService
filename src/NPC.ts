@@ -11,6 +11,8 @@ class NPC implements Observer{
 
 	taskService:TaskService;
 
+	dialoguePanel:DialoguePanel;
+
 	task:Task;
 
 	npcId:string;
@@ -33,21 +35,21 @@ class NPC implements Observer{
 	taskSubmitState:State;
 	taskStateMachine:StateMachine;
 
-	public constructor(npcId:string,npcName:string,taskService) {
+	public constructor(npcId:string,npcName:string,taskService,dialoguePanel:DialoguePanel) {
 		this.npcStage = new egret.DisplayObjectContainer();
 		this.npcStageShape = new egret.Shape();
 		this.emoji = new egret.Bitmap();
 		this.npcId = npcId;
 		this.npcName = npcName;
 		this.taskService= taskService;
-		this.taskService.addObserver(this,"NPC");
+		this.taskService.addObserver(this);
 
 		this.taskNoneState = new TaskNoneState(this);
 		this.taskAvilableState = new TaskAvilableState(this);
 		this.taskSubmitState = new TaskSubmitState(this);
 
 		this.taskStateMachine = new StateMachine(this.taskNoneState);
-
+		this.dialoguePanel = dialoguePanel;
 	}
 
 	getTask() {
@@ -124,10 +126,12 @@ class NPC implements Observer{
 
 	onNpcClick(e:egret.TouchEvent) {
 		if(this.task.status == TaskStatus.ACCEOTABLE && this.task.fromNpcId == this.npcId){
-			this.taskService.notifyTaskPanel(this.task);
+			//this.taskService.notifyTaskPanel(this.task);
+			this.dialoguePanel.onOpen(this.task);
 
 		}else if(this.task.status == TaskStatus.CAN_SUBMIT && this.task.toNpcId == this.npcId) {
-			this.taskService.notifyTaskPanel(this.task);
+			//this.taskService.notifyTaskPanel(this.task);
+			this.dialoguePanel.onOpen(this.task);
 		}
 	}
 

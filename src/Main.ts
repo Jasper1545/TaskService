@@ -95,7 +95,9 @@ class Main extends egret.DisplayObjectContainer {
 
         var taskPanel = new TaskPanel(this,taskService);
 
-        var npc_0 = new NPC("npc_0","NPC_1",taskService);
+        var dialoguePanel = new DialoguePanel(this,taskService);
+
+        var npc_0 = new NPC("npc_0","NPC_1",taskService,dialoguePanel);
         npc_0.setNpc(0,100,0x800080);
         npc_0.drawNpc();
         this.addChild(npc_0.npcStage);
@@ -103,7 +105,7 @@ class Main extends egret.DisplayObjectContainer {
         npc_0.getTask();
 
         
-        var npc_1 = new NPC("npc_1","NPC_2",taskService);
+        var npc_1 = new NPC("npc_1","NPC_2",taskService,dialoguePanel);
         npc_1.setNpc(200,100,0x0000FF);
         npc_1.drawNpc();
         this.addChild(npc_1.npcStage);
