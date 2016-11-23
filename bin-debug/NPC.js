@@ -3,7 +3,7 @@ var npcBitmap = {
     npc_1: "player01_idle_right_png"
 };
 var NPC = (function () {
-    function NPC(npcId, npcName, taskService) {
+    function NPC(npcId, npcName, taskService, dialoguePanel) {
         this.tileSize = 64;
         this.emojiX = 0;
         this.emojiY = 64;
@@ -15,11 +15,12 @@ var NPC = (function () {
         this.npcId = npcId;
         this.npcName = npcName;
         this.taskService = taskService;
-        this.taskService.addObserver(this, "NPC");
+        this.taskService.addObserver(this);
         this.taskNoneState = new TaskNoneState(this);
         this.taskAvilableState = new TaskAvilableState(this);
         this.taskSubmitState = new TaskSubmitState(this);
         this.taskStateMachine = new StateMachine(this.taskNoneState);
+        this.dialoguePanel = dialoguePanel;
     }
     var d = __define,c=NPC,p=c.prototype;
     p.getTask = function () {
@@ -84,10 +85,12 @@ var NPC = (function () {
     };
     p.onNpcClick = function (e) {
         if (this.task.status == TaskStatus.ACCEOTABLE && this.task.fromNpcId == this.npcId) {
-            this.taskService.notifyTaskPanel(this.task);
+            //this.taskService.notifyTaskPanel(this.task);
+            this.dialoguePanel.onOpen(this.task);
         }
         else if (this.task.status == TaskStatus.CAN_SUBMIT && this.task.toNpcId == this.npcId) {
-            this.taskService.notifyTaskPanel(this.task);
+            //this.taskService.notifyTaskPanel(this.task);
+            this.dialoguePanel.onOpen(this.task);
         }
     };
     p.onChange = function (task) {

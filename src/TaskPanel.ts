@@ -38,6 +38,13 @@ class TaskPanel implements Observer{
 	private taskDescTextFieldY = 100;
 	private taskDescTextFieldWidth = 180;
 	private taskDescTextFieldColor = 0xFF0000;
+
+	private taskProcessTextField:egret.TextField;
+	private taskProcessTextFieldText = "0/0";
+	private taskProcessTextFieldX = 10;
+	private taskProcessTextFieldY = 170;
+	private taskProcessTextFieldWidth = 180;
+	private taskProcessTextFieldColor = 0xFF0000;
 	
 	private button:egret.DisplayObjectContainer;
 	private buttonBack:egret.Shape;
@@ -62,6 +69,7 @@ class TaskPanel implements Observer{
 		this.panel = new egret.DisplayObjectContainer();
 		this.taskNameTextField = new egret.TextField();
 		this.taskDescTextField = new egret.TextField();
+		this.taskProcessTextField = new egret.TextField();
 		this.backGround = new egret.Shape();
 		this.button = new egret.DisplayObjectContainer();
 		this.buttonBack = new egret.Shape();
@@ -86,6 +94,13 @@ class TaskPanel implements Observer{
 		this.taskDescTextField.bold = false;
 		this.taskDescTextField.textColor = this.taskDescTextFieldColor;
 
+
+		this.taskProcessTextField.text = this.taskProcessTextFieldText;
+		this.taskProcessTextField.x = this.taskProcessTextFieldX;
+		this.taskProcessTextField.y = this.taskProcessTextFieldY;
+		this.taskProcessTextField.width = this.taskProcessTextFieldWidth;
+		this.taskProcessTextField.bold = false;
+		this.taskProcessTextField.textColor = this.taskProcessTextFieldColor;
 
 	}
 
@@ -131,6 +146,7 @@ class TaskPanel implements Observer{
 		this.panel.addChild(this.backGround);
 		this.panel.addChild(this.taskNameTextField);
 		this.panel.addChild(this.taskDescTextField);
+		this.panel.addChild(this.taskProcessTextField);
 		this.panel.addChild(this.button);
 
 	}
@@ -142,23 +158,27 @@ class TaskPanel implements Observer{
 
 	public onChange(task:Task) {
 		this.currentTaskId = task.id;
-		this.changeTaskText(task.name,task.desc);
+		this.changeTaskText(task.name,task.desc,task.current,task.total);
 		this.changeButton(task.status);
 		this.currentTaskStatus = task.status;
 		//this.showPanel();
 
 	} //被通知
 
-	private changeTaskText(name:string,desc:string) {
+	private changeTaskText(name:string,desc:string,current:number,total:number) {
 		this.taskNameTextField.text = name;
 		this.taskDescTextField.text = desc;
-
+		this.taskProcessTextField.text = current + "/" + total;
 	}
 
 	private changeButton(taskStatus:number) {
 		switch(taskStatus){
 			case TaskStatus.ACCEOTABLE:
 				this.buttonTextField.text = "可接受";
+				break;
+
+			case TaskStatus.DURING:
+				this.buttonTextField.text = "进行中";
 				break;
 
 			case TaskStatus.CAN_SUBMIT:

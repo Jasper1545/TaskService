@@ -1,5 +1,5 @@
 interface Observer {
 	
-	onChange(task:Task);
+	onChange(object:any);
 
 }

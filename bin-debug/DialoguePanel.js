@@ -1,14 +1,8 @@
-/*
-使用方法：
-    1.drawPanel();
-    2.获得panel
-*/
-var TaskPanel = (function () {
-    function TaskPanel(stage, taskService) {
-        this.id = "TaskPanel";
+var DialoguePanel = (function () {
+    function DialoguePanel(stage, taskService) {
         this.backColor = 0xFFFAFA;
         this.panelX = 100;
-        this.panelY = 600;
+        this.panelY = 300;
         this.panelWidth = 200;
         this.panelHeight = 300;
         this.taskNameTextFieldText = "Task";
@@ -21,11 +15,6 @@ var TaskPanel = (function () {
         this.taskDescTextFieldY = 100;
         this.taskDescTextFieldWidth = 180;
         this.taskDescTextFieldColor = 0xFF0000;
-        this.taskProcessTextFieldText = "0/0";
-        this.taskProcessTextFieldX = 10;
-        this.taskProcessTextFieldY = 170;
-        this.taskProcessTextFieldWidth = 180;
-        this.taskProcessTextFieldColor = 0xFF0000;
         this.buttonColor = 0x808000;
         this.buttonX = 50;
         this.buttonY = 200;
@@ -38,20 +27,16 @@ var TaskPanel = (function () {
         this.buttonTextFieldColor = 0xFFFAFA;
         this.stage = stage;
         this.taskService = taskService;
-        this.taskService.addObserver(this);
         this.panel = new egret.DisplayObjectContainer();
         this.taskNameTextField = new egret.TextField();
         this.taskDescTextField = new egret.TextField();
-        this.taskProcessTextField = new egret.TextField();
         this.backGround = new egret.Shape();
         this.button = new egret.DisplayObjectContainer();
         this.buttonBack = new egret.Shape();
         this.buttonTextField = new egret.TextField();
         this.drawPanel();
-        this.getTask();
-        this.stage.addChild(this.panel);
     }
-    var d = __define,c=TaskPanel,p=c.prototype;
+    var d = __define,c=DialoguePanel,p=c.prototype;
     p.setText = function () {
         this.taskNameTextField.text = this.taskNameTextFieldText;
         this.taskNameTextField.x = this.taskNameTextFieldX;
@@ -65,12 +50,6 @@ var TaskPanel = (function () {
         this.taskDescTextField.width = this.taskDescTextFieldWidth;
         this.taskDescTextField.bold = false;
         this.taskDescTextField.textColor = this.taskDescTextFieldColor;
-        this.taskProcessTextField.text = this.taskProcessTextFieldText;
-        this.taskProcessTextField.x = this.taskProcessTextFieldX;
-        this.taskProcessTextField.y = this.taskProcessTextFieldY;
-        this.taskProcessTextField.width = this.taskProcessTextFieldWidth;
-        this.taskProcessTextField.bold = false;
-        this.taskProcessTextField.textColor = this.taskProcessTextFieldColor;
     };
     p.drawBackGround = function () {
         this.backGround.graphics.beginFill(this.backColor, 1);
@@ -107,56 +86,57 @@ var TaskPanel = (function () {
         this.panel.addChild(this.backGround);
         this.panel.addChild(this.taskNameTextField);
         this.panel.addChild(this.taskDescTextField);
-        this.panel.addChild(this.taskProcessTextField);
         this.panel.addChild(this.button);
+        this.button.touchEnabled = true;
+        this.button.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onButtonClick, this);
     };
+    p.onButtonClick = function (e) {
+        switch (this.currentTaskStatus) {
+            case TaskStatus.ACCEOTABLE:
+                console.log("Accept Button Click");
+                console.log("Current Task Id: " + this.currentTaskId);
+                this.taskService.accept(this.currentTaskId);
+                break;
+            case TaskStatus.CAN_SUBMIT:
+                console.log("Submit Button Click");
+                this.taskService.finish(this.currentTaskId);
+                break;
+            default:
+                console.log("Button Click");
+        }
+        this.stage.removeChild(this.panel);
+    }; //按钮被点击
     p.showPanel = function () {
         this.stage.addChild(this.panel);
     };
-    p.onChange = function (task) {
+    p.removePanel = function () {
+        this.stage.removeChild(this.panel);
+    };
+    p.onOpen = function (task) {
         this.currentTaskId = task.id;
-        this.changeTaskText(task.name, task.desc, task.current, task.total);
+        this.changeTaskText(task.name, task.desc);
         this.changeButton(task.status);
         this.currentTaskStatus = task.status;
-        //this.showPanel();
+        this.showPanel();
     }; //被通知
-    p.changeTaskText = function (name, desc, current, total) {
+    p.changeTaskText = function (name, desc) {
         this.taskNameTextField.text = name;
         this.taskDescTextField.text = desc;
-        this.taskProcessTextField.text = current + "/" + total;
     };
     p.changeButton = function (taskStatus) {
         switch (taskStatus) {
             case TaskStatus.ACCEOTABLE:
-                this.buttonTextField.text = "可接受";
-                break;
-            case TaskStatus.DURING:
-                this.buttonTextField.text = "进行中";
+                this.buttonTextField.text = "接受";
                 break;
             case TaskStatus.CAN_SUBMIT:
-                this.buttonTextField.text = "可提交";
-                break;
-            case TaskStatus.SUBMITTED:
-                this.buttonTextField.text = "已完成";
+                this.buttonTextField.text = "提交";
                 break;
             default:
                 this.buttonTextField.text = "";
                 break;
         }
     };
-    p.rule = function (taskList, id) {
-        for (var i = 0; i < taskList.length; i++) {
-            if (taskList[i].status != TaskStatus.UNACCEPTABLE) {
-                console.log(id + " Find Task");
-                return taskList[i];
-            }
-        }
-    };
-    p.getTask = function () {
-        var task = this.taskService.getTaskByCustomRole(this.rule, this.id);
-        this.onChange(task);
-    };
-    return TaskPanel;
+    return DialoguePanel;
 }());
-egret.registerClass(TaskPanel,'TaskPanel',["Observer"]);
-//# sourceMappingURL=TaskPanel.js.map
+egret.registerClass(DialoguePanel,'DialoguePanel');
+//# sourceMappingURL=DialoguePanel.js.map

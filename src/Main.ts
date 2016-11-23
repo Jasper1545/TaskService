@@ -91,7 +91,10 @@ class Main extends egret.DisplayObjectContainer {
 
         this.touchEnabled = true;
 
-        var taskService = new TaskService();
+        var scenceService = new SceneService()
+
+        var taskService = new TaskService(scenceService);
+
 
         var taskPanel = new TaskPanel(this,taskService);
 
@@ -112,8 +115,19 @@ class Main extends egret.DisplayObjectContainer {
 
         npc_1.getTask();
         
+        var button = new egret.Shape();
 
+        button.graphics.beginFill(0xFF0000,1);
+		button.graphics.drawRect(0,0,50,50);
+		button.graphics.endFill();
         
+        this.addChild(button);
+        button.touchEnabled = true;
+        button.addEventListener(egret.TouchEvent.TOUCH_TAP,ontouch,this);
+
+        function ontouch(e:egret.TouchEvent){
+            scenceService.notify("001");
+        }
 
     }
 

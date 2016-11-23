@@ -4,17 +4,17 @@ var ErrorCode = {
 	ID_NOTFOUND:1
 }
 
-class TaskService {
+class TaskService implements EventEmitter{
 
 	observerList:Observer[];
 	taskList:Task[];
 
 	task01:Task;
 
-	public constructor() {
+	public constructor(scenceService:SceneService) {
 		this.observerList = new Array();
 		this.taskList = new Array();
-		this.task01 = new Task("000","Task000","Go to NPC_2",TaskStatus.ACCEOTABLE,"npc_0","npc_1");
+		this.task01 = new Task(this,scenceService,"000","Task000","Go to NPC_2",TaskStatus.ACCEOTABLE,"npc_0","npc_1",0,10);
 		this.taskList.push(this.task01);
 	}
 
@@ -26,7 +26,8 @@ class TaskService {
 		for(var i = 0; i < this.taskList.length; i++) {
 			if(this.taskList[i].id == id) {
 				console.log("Find Task: " + this.taskList[i].id);
-				this.taskList[i].status = TaskStatus.CAN_SUBMIT;
+				this.taskList[i].status = TaskStatus.DURING;
+				this.taskList[i].taskCondition.onAccept(this.taskList[i]);
 				this.notify(this.taskList[i]);
 				return ErrorCode.NO_ERRIR;
 
@@ -42,6 +43,7 @@ class TaskService {
 		for(var i = 0; i < this.taskList.length; i++) {
 			if(this.taskList[i].id == id) {
 				this.taskList[i].status = TaskStatus.SUBMITTED;
+				this.taskList[i].taskCondition.onSubmit(this.taskList[i]);
 				this.notify(this.taskList[i]);
 				return ErrorCode.NO_ERRIR;
 				

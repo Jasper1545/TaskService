@@ -74,18 +74,30 @@ var Main = (function (_super) {
      */
     p.createGameScene = function () {
         this.touchEnabled = true;
-        var taskService = new TaskService();
+        var scenceService = new SceneService();
+        var taskService = new TaskService(scenceService);
         var taskPanel = new TaskPanel(this, taskService);
-        var npc_0 = new NPC("npc_0", "NPC_1", taskService);
+        var dialoguePanel = new DialoguePanel(this, taskService);
+        var npc_0 = new NPC("npc_0", "NPC_1", taskService, dialoguePanel);
         npc_0.setNpc(0, 100, 0x800080);
         npc_0.drawNpc();
         this.addChild(npc_0.npcStage);
         npc_0.getTask();
-        var npc_1 = new NPC("npc_1", "NPC_2", taskService);
+        var npc_1 = new NPC("npc_1", "NPC_2", taskService, dialoguePanel);
         npc_1.setNpc(200, 100, 0x0000FF);
         npc_1.drawNpc();
         this.addChild(npc_1.npcStage);
         npc_1.getTask();
+        var button = new egret.Shape();
+        button.graphics.beginFill(0xFF0000, 1);
+        button.graphics.drawRect(0, 0, 50, 50);
+        button.graphics.endFill();
+        this.addChild(button);
+        button.touchEnabled = true;
+        button.addEventListener(egret.TouchEvent.TOUCH_TAP, ontouch, this);
+        function ontouch(e) {
+            scenceService.notify("001");
+        }
     };
     return Main;
 }(egret.DisplayObjectContainer));
